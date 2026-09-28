@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Demo payment | TechGear Store{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/checkout.css' %}">{% endblock %}
+{% block content %}
+<div class="payment-page container section">
+  <div class="payment-demo-banner"><span>DEMO CHECKOUT</span><p>This local flow simulates payment for testing. It does not charge money or contact a payment provider.</p></div>
+  <div class="payment-card">
+    <span class="eyebrow">ORDER #{{ order.number|truncatechars:18 }}</span>
+    <h1>Complete your demo payment</h1>
+    <p class="payment-intro">Selected method: <strong>{{ order.get_payment_method_display }}</strong>. Confirm the simulated payment to finish this order.</p>
+    <div class="payment-total"><span>Amount due</span><strong>₹{{ order.total|floatformat:2 }}</strong></div>
+    <div class="payment-method-preview">{% if order.payment_method == 'upi' %}<span class="payment-symbol">UPI</span><div><b>UPI payment</b><small>A real UPI app is not opened in demo mode.</small></div>{% else %}<span class="payment-symbol card-symbol">▰</span><div><b>Card payment</b><small>Do not enter real card details on this demo page.</small></div>{% endif %}</div>
+    <form method="post" class="payment-actions">{% csrf_token %}<button class="btn btn-dark btn-lg" name="action" value="complete_demo">Simulate successful payment</button><button class="btn btn-outline-secondary" name="action" value="cancel" formnovalidate>Cancel order</button></form>
+    <a class="checkout-back" href="{% url 'orders:detail' order.id %}">Leave payment for now</a>
+  </div>
+</div>
+{% endblock %}

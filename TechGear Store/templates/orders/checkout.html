@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Checkout | TechGear Store{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/checkout.css' %}">{% endblock %}
+{% block content %}
+<div class="container section checkout-page">
+  <div class="checkout-title">
+    <span class="eyebrow">ONE LAST STEP</span>
+    <h1>Checkout</h1>
+    <p>Delivery details and a clear total, before you place your order.</p>
+  </div>
+  <form method="post" class="checkout-layout" novalidate>
+    {% csrf_token %}
+    <section class="checkout-form">
+      <div class="checkout-section-heading"><span class="step-number">1</span><div><h3>Delivery details</h3><p>Where should we send your gear?</p></div></div>
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+      <div class="checkout-fields">
+        {% for field in form %}
+          <div class="checkout-field {% if field.name == 'address' %}field-wide{% endif %}">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>
+            {{ field }}
+            {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}
+            {% if field.errors %}<div class="field-error">{{ field.errors|join:", " }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="payment-note"><span>🔒</span><p>Card and UPI use a local demo confirmation. This page does not ask for or store card numbers or UPI PINs.</p></div>
+      <button class="btn btn-dark btn-lg checkout-submit">{% if form.payment_method.value == 'cod' %}Place order · ₹{{ total|floatformat:2 }}{% else %}Continue to demo payment · ₹{{ total|floatformat:2 }}{% endif %}</button>
+      <a class="checkout-back" href="{% url 'cart:view' %}">← Return to cart</a>
+    </section>
+    <aside class="summary-card checkout-summary">
+      <div class="summary-title"><h4>Your order</h4><span>{{ cart_count }} item{{ cart_count|pluralize }}</span></div>
+      <div class="checkout-items">
+        {% for line in items %}
+          <div class="checkout-item">
+            <div class="checkout-item-image">
+              {% if line.product.image %}<img src="{{ line.product.image }}" alt="{{ line.product.name }}">{% else %}<span>{{ line.product.category.name|slice:":1" }}</span>{% endif %}
+              <b>{{ line.quantity }}</b>
+            </div>
+            <div class="checkout-item-info"><strong>{{ line.product.name }}</strong><small>{{ line.product.brand }} · ₹{{ line.product.current_price|floatformat:2 }} each</small></div>
+            <b class="checkout-item-total">₹{{ line.line_total|floatformat:2 }}</b>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="checkout-costs">
+        <div><span>Subtotal</span><b>₹{{ subtotal|floatformat:2 }}</b></div>
+        <div><span>Delivery</span><b>{% if shipping %}₹{{ shipping|floatformat:2 }}{% else %}<span class="free-delivery">Free</span>{% endif %}</b></div>
+        <div class="checkout-grand-total"><span>Total due</span><b>₹{{ total|floatformat:2 }}</b></div>
+      </div>
+      <p class="delivery-promise">{% if shipping %}Free delivery when you add ₹{{ free_delivery_gap|floatformat:2 }} more.{% else %}Your order qualifies for free delivery.{% endif %}</p>
+    </aside>
+  </form>
+</div>
+{% endblock %}

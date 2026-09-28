@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Order placed | TechGear Store{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/order.css' %}">
+{% endblock %}
+{% block content %}
+<section class="success-page">
+  <span class="success-mark" aria-hidden="true">✓</span>
+  <span class="eyebrow">ORDER CONFIRMED</span>
+  <h1>Thanks for choosing TechGear.</h1>
+  <p>Your order <strong>#{{ order.number }}</strong> is in. We’ll send updates to {{ order.email }}.</p>
+
+  <div class="success-summary" aria-label="Order summary">
+    <div>
+      <span>ORDER TOTAL</span>
+      <b>₹{{ order.total|floatformat:2 }}</b>
+    </div>
+    <div>
+      <span>PAYMENT</span>
+      <b>{{ order.get_payment_method_display }} · {{ order.get_payment_status_display }}</b>
+    </div>
+  </div>
+
+  <div class="success-actions">
+    <a class="btn btn-dark" href="{% url 'orders:detail' order.pk %}">View order details</a>
+    <a class="btn btn-outline-secondary" href="{% url 'products:list' %}">Keep shopping</a>
+  </div>
+</section>
+{% endblock %}
